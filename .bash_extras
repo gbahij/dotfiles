@@ -1,0 +1,44 @@
+# For running some handrolled scripts
+PATH="$HOME/bin:$PATH"
+
+# No more "cd ../../../..", but "up 4"
+up() {
+    local d=""
+    limit=$1
+    for ((i=1 ; i <= limit ; i++))
+        do
+            d=$d/..
+        done
+    d=$(echo $d | sed 's/^\///')
+    if [ -z "$d" ]; then
+        d=..
+    fi
+    cd $d
+}
+
+# jump / mark / unmark / marks for quick directory shortcuts
+export MARKPATH=$HOME/.marks
+function jump {
+    cd -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
+}
+function mark {
+    mkdir -p "$MARKPATH"; ln -s "$(pwd)" "$MARKPATH/$1"
+}
+function unmark {
+    rm -i "$MARKPATH/$1"
+}
+function marks {
+    ls -l "$MARKPATH" | sed 's/  / /g' | cut -d' ' -f9- | sed 's/ -/\t-/g' && echo
+}
+_completemarks() {
+    local curw=${COM_WORDS[COMP_CWORD]}
+    local wordlist=$(find $MARKPATH -type l -printf "%f\n")
+    COMPREPLY=($(compgen -W '${wordlist[@]}' -- "$curw"))
+    return 0
+}
+complete -F _completemarks jump unmark
+
+# Get colors with less
+export LESS='-R'
+export LESSOPEN='|lessfilter %s'
+
