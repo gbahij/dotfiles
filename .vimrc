@@ -33,6 +33,17 @@ if !exists(":DiffOrig")
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Pathogen stuff
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+execute pathogen#infect()
+
+let g:miniBufExplMapWindowNavVim = 1
+let g:miniBufExplMapWindowNavArrows = 1
+let g:miniBufExplMapCTabSwitchBufs = 1
+let g:miniBufExplModSelTarget = 1
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Based on Amir Salihefendic's vimrc V5.0: https://github.com/amix/vimrc
 "
 " Sections:
@@ -150,12 +161,20 @@ set foldcolumn=0
 " Enable syntax highlighting
 syntax enable
 
+set background=dark
 try
-    colorscheme desert
+	let g:solarized_termtrans=1
+	colorscheme solarized
 catch
 endtry
 
-set background=dark
+" MiniBufExpl Colors
+hi MBENormal               guifg=#808080 guibg=#226644
+hi MBEChanged              guifg=#CD5907 guibg=#226644
+hi MBEVisibleNormal        guifg=#5DC2D6 guibg=#226644
+hi MBEVisibleChanged       guifg=#F1266F guibg=#226644
+hi MBEVisibleActiveNormal  guifg=#A6DB29 guibg=#226644
+hi MBEVisibleActiveChanged guifg=#F1266F guibg=#226644
 
 " Set extra options when running in GUI mode
 if has("gui_running")
@@ -172,15 +191,19 @@ set encoding=utf8
 set ffs=unix,dos,mac
 
 " Highlight background of too long lines
-highlight OverLength ctermbg=black guibg=#ffd9d9
-match OverLength /\%80v.\+/
+" highlight OverLength ctermbg=black guibg=#ffd9d9
+" match OverLength /\%80v.\+/
 " Long line test. Long line test. Long line test. Long line test. Long line test. Long line test.
+
+" Reload syntax highlighting when stuck
+noremap <F12> <Esc>:syntax sync fromstart<CR>
+inoremap <F12> <C-o>:syntax sync fromstart<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Text, tab and indent related
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Use spaces instead of tabs
-set expandtab
+" Use spaces/tabs instead of tabs/spaces
+set noexpandtab
 
 " Be smart when using tabs
 set smarttab
@@ -188,7 +211,6 @@ set smarttab
 " 1 tab == 4 spaces
 set shiftwidth=4
 set tabstop=4
-set softtabstop=4
 
 " Linebreak on 500 characters
 set lbr
@@ -197,12 +219,6 @@ set tw=500
 set ai "Auto indent
 set si "Smart indent
 set wrap "Wrap lines
-
-" For switching between different tab styles
-:nmap \t :set expandtab tabstop=4 shiftwidth=4 softtabstop=4<CR>
-:nmap \T :set expandtab tabstop=8 shiftwidth=8 softtabstop=4<CR>
-:nmap \M :set noexpandtab tabstop=8 shiftwidth=4 softtabstop=4<CR>
-:nmap \m :set expandtab tabstop=2 shiftwidth=2 softtabstop=4<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Visual mode related
@@ -243,7 +259,8 @@ map <leader>tn :tabnew<cr>
 map <leader>to :tabonly<cr>
 map <leader>tc :tabclose<cr>
 map <leader>tm :tabmove<cr>
-map <leader>t<leader> :tabnext
+map <leader>tt :tabnext<cr>
+map <leader>tr :tabprev<cr>
 
 " Opens a new tab with the current buffer's path
 " Super useful when editing files in the same directory
@@ -274,7 +291,9 @@ set viminfo^=%
 set laststatus=2
 
 " set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l
-set statusline=%{HasPaste()}%t[%{strlen(&fenc)?&fenc:'none'},%{&ff},%{FileSize()}]%h%m%r%y%=%c,%l/%L\ %P
+set statusline=%{HasPaste()}%t[%{strlen(&fenc)?&fenc:'none'},%{&ff},%{FileSize()}]
+set statusline+=%{fugitive#statusline()}
+set statusline+=%h%m%r%y%=%c,%l/%L\ %P
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing mappings
