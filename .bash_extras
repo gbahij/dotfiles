@@ -42,3 +42,13 @@ complete -F _completemarks jump unmark
 export LESS='-R'
 export LESSOPEN='|lessfilter %s'
 
+# Fancy git log
+alias gitlg="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
+
+# Gitdiff hack
+gdiff() {
+    git diff "$@"
+    git ls-files --others --exclude-standard |
+        while read -r i; do git diff "$@" -- /dev/null "$i"; done
+}
+
